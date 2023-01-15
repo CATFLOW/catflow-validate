@@ -15,3 +15,15 @@ pip install catflow_validate
 ## Use
 
 Catflow-validate can be used as a python library or a command line interface. 
+
+```
+Usage: catlidate landuse [OPTIONS]
+
+Options:
+  -f, --filename TEXT  Filename for the landuse class definition file.
+  -r, --recursive      Validate all referenced landuse class parameter files
+                       recursively
+  -v, --verbose        Print out verbose information on errors and warnings.
+  -e, --extended       Print an extended report.
+  --help               Show this message and exit.
+```
