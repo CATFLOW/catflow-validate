@@ -112,8 +112,8 @@ class Report:
         else:
             self.__run_with_echo()
     
-    def __run__(self):
+    def __call__(self):
         self.run()
 
     def __str__(self):
-        return self.__run__()
+        return self.__call__()
