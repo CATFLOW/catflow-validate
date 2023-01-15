@@ -22,7 +22,7 @@ def landuse(filename: str, recursive: bool = False, verbose: bool = False, exten
         return 1
     
     # load the file
-    l = LanduseClassDef(filename)
+    l = LanduseClassDef(filename, recursive=recursive)
 
     # validate
     valid = l.validate()
