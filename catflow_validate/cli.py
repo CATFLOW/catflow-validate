@@ -1,4 +1,5 @@
 import os
+import glob
 
 import click
 
@@ -43,8 +44,29 @@ def landuse(filename: str, recursive: bool = False, verbose: bool = False, exten
     report.landuse_details(extended=extended)
 
 
+@click.command()
+@click.option('--input-folder', '-i', default='./', help="CATFLOW input data root folder")
+@click.option('--landuse-filename', '-L', default='landuseclass.def', help="Name of the landuse-class definition file")
+def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def'):
+    # get all files recursively
+    filenames = glob.glob(os.path.join(input_folder, '**', '*'), recursive=True)
+
+    # filter for the landuse file
+    try:
+        filename = next(filter(lambda s: s.endswith(landuse_filename), filenames))
+        landuse = LanduseClassDef(filename=filename, basepath=input_folder, recursive=True)
+        landuse.validate()
+    except Exception:
+        landuse = None
+
+    # finally build the report
+    report = Report(landuse=landuse)
+    report()
+
+
 # add the commands
 cli.add_command(landuse)
+cli.add_command(report)
 
 
 if __name__ == '__main__':
