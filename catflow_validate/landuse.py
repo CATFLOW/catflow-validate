@@ -54,21 +54,21 @@ class LanduseClassDef:
         for i, (id, name, path) in enumerate(self.data):
             # check datatype
             if not isinstance(id, int):
-                self.errors[i].append(('TypeError', f"[L {i + 1}] line {i + 1} does not contain an integer landuse class definion ID."))
+                self.errors[i].append(('TypeError', f"[L. {i + 1}] line {i + 1} does not contain an integer landuse class definion ID."))
             
             # check if the referenced parameter file
             par_path = os.path.join(self.catflow_basepath, path)
             if not os.path.exists(par_path):
-                self.errors[i].append(('ValueError', f"[L {i + 1}] line {i + 1} references {par_path}, which does not exist."))
+                self.errors[i].append(('ValueError', f"[L. {i + 1}] line {i + 1} references {par_path}, which does not exist."))
             
             # check duplicates
             id_idx = [d[0] for d in self.data].index(id)
             if id_idx != i:
-                self.errors[i].append(('DuplicateError', f"[L {i + 1}] Duplicate landuse class ID. line {i + 1} is a duplicate of line {id_idx}"))
+                self.errors[i].append(('DuplicateError', f"[L. {i + 1}] Duplicate landuse class ID. Line {i + 1} is a duplicate of line {id_idx + 1}"))
             
             name_idx = [d[1] for d in self.data].index(name)
             if name_idx != i:
-                self.errors[i].append(('Warning', f"[L {i + 1}] Duplicate landuse class NAME. line {i + 1} is a duplicate of line {id_idx}"))
+                self.errors[i].append(('Warning', f"[L. {i + 1}] Duplicate landuse class NAME. Line {i + 1} is a duplicate of line {name_idx + 1}"))
         
         # Check if file is valid
         if len(self.errors) == 0:
@@ -80,4 +80,11 @@ class LanduseClassDef:
 
             warnings = [e[0].lower() == 'warning' for v in self.errors.values() for e in v]
             return all(warnings)
-            
+    
+    @property
+    def n_errors(self) -> int:
+        return len([True for v in self.errors.values() for e in v if e[0].lower() != 'warning'])
+
+    @property
+    def n_warnings(self) -> int:
+        return len([True for v in self.errors.values() for e in v if e[0].lower() == 'warning'])
