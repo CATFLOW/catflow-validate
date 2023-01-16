@@ -111,7 +111,14 @@ class Report:
                         self.__run_with_echo()
         else:
             self.__run_with_echo()
-    
+
+    def valid(self, warnings_as_errors: bool = True):
+        """Get through all child test suites and return their state"""
+        # landuse
+        landuse = self.landuse is not None and self.landuse.n_errors == 0 and (warnings_as_errors and self.landuse.n_warnings == 0)
+
+        return landuse
+
     def __call__(self):
         self.run()
 
