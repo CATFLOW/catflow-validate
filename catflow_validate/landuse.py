@@ -27,6 +27,8 @@ class LanduseClassDef:
         # recursive
         self.recursive = recursive
         self.parameters: Dict[int, LanduseParameter] = {}
+
+        self._did_run = False
         
     @classmethod
     def open(cls, filename: str) -> 'LanduseClassDef':
@@ -86,6 +88,9 @@ class LanduseClassDef:
             if name_idx != i:
                 self.errors[i].append(('Warning', f"[L. {i + 1}] Duplicate landuse class NAME. Line {i + 1} is a duplicate of line {name_idx + 1}"))
         
+        # set the run flag
+        self._did_run = True
+
         # Check if file is valid
         if len(self.errors) == 0:
             return True
@@ -99,10 +104,14 @@ class LanduseClassDef:
     
     @property
     def n_errors(self) -> int:
+        if not self._did_run:
+            self.validate()
         return len([True for v in self.errors.values() for e in v if e[0].lower() != 'warning'])
 
     @property
     def n_warnings(self) -> int:
+        if not self._did_run:
+            self.validate()
         return len([True for v in self.errors.values() for e in v if e[0].lower() == 'warning'])
 
 
