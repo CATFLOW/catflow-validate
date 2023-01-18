@@ -47,7 +47,8 @@ def landuse(filename: str, recursive: bool = False, verbose: bool = False, exten
 @click.command()
 @click.option('--input-folder', '-i', default='./', help="CATFLOW input data root folder")
 @click.option('--landuse-filename', '-L', default='landuseclass.def', help="Name of the landuse-class definition file")
-def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def'):
+@click.option('--fmt', default='txt', type=click.Choice(['txt', 'md'], case_sensitive=False), help="Output format of the report")
+def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def', fmt: str = 'txt'):
     # get all files recursively
     filenames = glob.glob(os.path.join(input_folder, '**', '*'), recursive=True)
 
@@ -60,7 +61,7 @@ def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def')
         landuse = None
 
     # finally build the report
-    report = Report(landuse=landuse)
+    report = Report(landuse=landuse, fmt=fmt)
     report()
 
 
