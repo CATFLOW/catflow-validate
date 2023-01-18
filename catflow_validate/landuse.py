@@ -114,6 +114,8 @@ class LanduseClassDef:
             self.validate()
         return len([True for v in self.errors.values() for e in v if e[0].lower() == 'warning'])
 
+    def valid(self, warnings_as_errors: bool = True) -> bool:
+        return self.n_errors == 0 and (not warnings_as_errors or self.n_warnings == 0)
 
 class LanduseParameter:
     def __init__(self, filename: str, encoding: str = 'utf-8'):
