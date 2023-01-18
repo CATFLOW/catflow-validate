@@ -3,7 +3,6 @@ import os
 from collections import defaultdict
 
 CLASSDEF_DATA = List[Tuple[int, str, str]]
-BASEPATH = '../..'
 
 
 class LanduseClassDef:
@@ -21,8 +20,9 @@ class LanduseClassDef:
         self.path = os.path.abspath(os.path.dirname(self.filename))
         self.basename = os.path.basename(self.filename)
         if basepath is None:
-            basepath = BASEPATH
-        self.catflow_basepath = os.path.abspath(os.path.join(self.path, basepath))
+            self.catflow_basepath = os.path.abspath(os.path.join(self.path, '../../'))
+        else:
+            self.catflow_basepath = os.path.abspath(basepath)
 
         # recursive
         self.recursive = recursive
