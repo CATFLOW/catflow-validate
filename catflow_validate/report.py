@@ -4,6 +4,7 @@ import contextlib
 import click
 from click import style, echo
 
+from catflow_validate import __version__
 from catflow_validate.format import get_formatter, TextFormatter
 from catflow_validate.landuse import LanduseClassDef
 
@@ -24,6 +25,7 @@ class Report:
     def __run_with_echo(self):
         # header
         echo(self.fmt.heading('CATFLOW input file validation report', level=1))
+        echo(f"Catlidate version: {__version__}")
         echo('')
 
         # overview
