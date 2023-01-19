@@ -112,7 +112,6 @@ class LanduseClassDef:
         if warnings_as_errors:
             return False
         else:
-
             warnings = [e[0].lower() == 'warning' for v in self.errors.values() for e in v]
             return all(warnings)
     
@@ -222,7 +221,7 @@ class LanduseParameter:
         
         return len(self.errors.keys()) == 0     
 
-    @ property
+    @property
     def flat_errors(self) -> List[Tuple[str, str]]:
         err_list = []
         for errs in self.errors.values():
