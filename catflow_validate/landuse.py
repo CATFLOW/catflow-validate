@@ -25,6 +25,7 @@ class LanduseClassDef:
             self.catflow_basepath = os.path.abspath(os.path.join(self.path, '../../'))
         else:
             self.catflow_basepath = os.path.abspath(basepath)
+        self.relative_path = os.path.relpath(self.path, self.catflow_basepath)
 
         # recursive
         self.recursive = recursive
@@ -76,12 +77,12 @@ class LanduseClassDef:
         for i, (id, name, path) in enumerate(self.data):
             # check datatype
             if not isinstance(id, int):
-                self.errors[i].append(('TypeError', f"{self.__line_link(i + 1, path)} line {i + 1} does not contain an integer landuse class definion ID."))
+                self.errors[i].append(('TypeError', f"{self.__line_link(i + 1, self.relative_path)} line {i + 1} does not contain an integer landuse class definion ID."))
             
             # check if the referenced parameter file
             par_path = os.path.join(self.catflow_basepath, path)
             if not os.path.exists(par_path):
-                self.errors[i].append(('ValueError', f"{self.__line_link(i + 1, path)} line {i + 1} references {par_path}, which does not exist."))
+                self.errors[i].append(('ValueError', f"{self.__line_link(i + 1, self.relative_path)} line {i + 1} references {par_path}, which does not exist."))
             elif self.recursive:
                 par = LanduseParameter(par_path, encoding=self.encoding, relative_path=path)
                 par_valid = par.validate()
@@ -90,16 +91,16 @@ class LanduseClassDef:
                 # check if the parameter file was not valid
                 if not par_valid:
                     link = self.fmt.link(par.basename, os.path.join(self.base_href, path))
-                    self.errors[i].append(('Warning', f"{self.__line_link(i + 1, path)} The reference landuse parameter file {link} is not valid."))
+                    self.errors[i].append(('Warning', f"{self.__line_link(i + 1, self.relative_path)} The reference landuse parameter file {link} is not valid."))
 
             # check duplicates
             id_idx = [d[0] for d in self.data].index(id)
             if id_idx != i:
-                self.errors[i].append(('DuplicateError', f"{self.__line_link(i + 1, path)} Duplicate landuse class ID. Line {i + 1} is a duplicate of line {id_idx + 1}"))
+                self.errors[i].append(('DuplicateError', f"{self.__line_link(i + 1, self.relative_path)} Duplicate landuse class ID. Line {i + 1} is a duplicate of line {id_idx + 1}"))
             
             name_idx = [d[1] for d in self.data].index(name)
             if name_idx != i:
-                self.errors[i].append(('Warning', f"{self.__line_link(i + 1, path)} Duplicate landuse class NAME. Line {i + 1} is a duplicate of line {name_idx + 1}"))
+                self.errors[i].append(('Warning', f"{self.__line_link(i + 1, self.relative_path)} Duplicate landuse class NAME. Line {i + 1} is a duplicate of line {name_idx + 1}"))
         
         # set the run flag
         self._did_run = True
