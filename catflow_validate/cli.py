@@ -48,17 +48,19 @@ def landuse(filename: str, recursive: bool = False, verbose: bool = False, exten
 @click.option('--input-folder', '-i', default='./', help="CATFLOW input data root folder")
 @click.option('--landuse-filename', '-L', default='landuseclass.def', help="Name of the landuse-class definition file")
 @click.option('--fmt', default='txt', type=click.Choice(['txt', 'md'], case_sensitive=False), help="Output format of the report")
-def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def', fmt: str = 'txt'):
+@click.option('--base-href', type=str, help="Base href path for hyperlinks in the report.")
+def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def', fmt: str = 'txt', base_href=None):
     # get all files recursively
     filenames = glob.glob(os.path.join(input_folder, '**', '*'), recursive=True)
 
     # filter for the landuse file
-    try:
-        filename = next(filter(lambda s: s.endswith(landuse_filename), filenames))
-        landuse = LanduseClassDef(filename=filename, basepath=input_folder, recursive=True)
-        landuse.validate()
-    except Exception:
-        landuse = None
+    #try:
+    filename = next(filter(lambda s: s.endswith(landuse_filename), filenames))
+    landuse = LanduseClassDef(filename=filename, basepath=input_folder, recursive=True, fmt=fmt, base_href=base_href)
+    landuse.validate()
+    #except Exception:
+    #    print('GOT WRONG')
+    #    landuse = None
 
     # finally build the report
     report = Report(landuse=landuse, fmt=fmt)
