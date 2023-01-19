@@ -45,8 +45,8 @@ class Report:
             lines.append(['Landuse classes', 'not checked', 'NA', 'NA'])
         else:
             msg = [
-                style('Landuse classes', fg='green' if self.landuse.valid() else 'red'),
-                style('valid' if self.landuse.valid() else 'invalid', fg='green' if self.landuse.valid() else 'red'),
+                style('Landuse classes  ', fg='green' if self.landuse.valid() else 'red'),
+                style('valid  ' if self.landuse.valid() else 'invalid', fg='green' if self.landuse.valid() else 'red'),
                 style(self.landuse.n_errors, fg='' if self.landuse.n_errors == 0 else 'red'),
                 style(self.landuse.n_warnings, fg='' if self.landuse.n_warnings == 0 else 'yellow'),
             ]
@@ -58,14 +58,14 @@ class Report:
                 
                 # format the name
                 name = self.landuse.data[cl][1]
-                name = f"{name[:20] if len(name) <= 20 else name[:17]}{'...' if len(name) <= 20 else ''}"
+                name = f"{name[:20] if len(name) > 20 else name[:17]}{'...' if len(name) > 20 else ''}"
                 if len(name) < 20:
                     name = name.ljust(20)
                 
                 # build the line
                 msg = [
                     style(name, fg='green' if valid else 'red'),
-                    style('valid' if valid else 'invalid', fg='green' if valid else 'red'),
+                    style('valid  ' if valid else 'invalid', fg='green' if valid else 'red'),
                     style(lp.n_errors, fg='red' if lp.n_errors > 0 else ''),
                     style(lp.n_warnings, fg='yellow' if lp.n_warnings > 0 else '')
                 ]
