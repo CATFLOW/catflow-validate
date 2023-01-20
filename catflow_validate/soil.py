@@ -7,7 +7,7 @@ from catflow_validate.format import get_formatter, BaseFormatter, TextFormatter
 
 class SoilsDef:
     """Soil definition file representation"""
-    def __init__(self, filename: str, encoding: str = 'latin1', fmt: str = 'txt', base_href: str = None):
+    def __init__(self, filename: str, encoding: str = 'utf-8', fmt: str = 'txt', base_href: str = None):
         self.encoding = encoding
 
         # path settings
