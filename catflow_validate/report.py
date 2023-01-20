@@ -7,6 +7,7 @@ from click import style, echo
 from catflow_validate import __version__
 from catflow_validate.format import get_formatter, TextFormatter
 from catflow_validate.landuse import LanduseClassDef
+from catflow_validate.soil import SoilsDef
 
 ERROR_COLORS = dict(
     warning='yellow',
@@ -17,8 +18,9 @@ ERROR_COLORS = dict(
 )
 
 class Report:
-    def __init__(self, landuse: LanduseClassDef = None, output_file: str = None, fmt: str = 'txt'):
+    def __init__(self, landuse: LanduseClassDef = None, soil: SoilsDef = None, output_file: str = None, fmt: str = 'txt'):
         self.landuse = landuse
+        self.soil = soil
         self.output_file = output_file
         self.fmt = get_formatter(fmt, TextFormatter)
 
