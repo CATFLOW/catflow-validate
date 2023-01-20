@@ -4,6 +4,7 @@ import glob
 import click
 
 from catflow_validate.landuse import LanduseClassDef
+from catflow_validate.soil import SoilsDef
 from catflow_validate.report import Report
 
 
@@ -45,6 +46,30 @@ def landuse(filename: str, recursive: bool = False, verbose: bool = False, exten
 
 
 @click.command()
+@click.option('--filename', '-f', default='./l*_soils.def', help='Filename for the SOIL definition file.')
+@click.option('--verbose', '-v', default=False, is_flag=True, help="Print out verbose information on errors and warnings.")
+@click.option('--omit-warnings', '-w', default=False, is_flag=True, help="If set, Warnings are ignored.")
+def soil(filename: str, verbose: bool = False, omit_warnings: bool = False) -> int:
+    if not os.path.exists(filename):
+        click.echo("The soil definition file could not be found")
+        return 1
+    
+    # load the file
+    s = SoilsDef(filename, encoding='latin1')
+
+    # single word return
+    if not verbose:
+        if s.valid(warnings_as_errors=not omit_warnings):
+            click.secho('valid', fg='green')
+        else:
+            click.secho('invalid', fg='red')
+        return 0
+
+    # use the report
+    click.echo('Verbose output not implemented yet')
+    
+
+@click.command()
 @click.option('--input-folder', '-i', default='./', help="CATFLOW input data root folder")
 @click.option('--landuse-filename', '-L', default='landuseclass.def', help="Name of the landuse-class definition file")
 @click.option('--fmt', default='txt', type=click.Choice(['txt', 'md'], case_sensitive=False), help="Output format of the report")
@@ -69,6 +94,7 @@ def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def',
 
 # add the commands
 cli.add_command(landuse)
+cli.add_command(soil)
 cli.add_command(report)
 
 
