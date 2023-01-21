@@ -122,21 +122,21 @@ class SoilDef:
         # check line 2
         # TODO: 14 floats? 
         if len(self.lines[1].split()) != 14:
-            self.errors[self.startline + 1].append(('ValueError', f"{self.__line_link(2)} line {self.startline + 1} of SOIL '{name}' has {self.lines[1].split()} values, but 14 were expected."))
+            self.errors[self.startline + 1].append(('ValueError', f"{self.__line_link(2)} line {self.startline + 2} of SOIL '{name}' has {len(self.lines[1].split())} values, but 14 were expected."))
         
         # line 3
         # TODO: 9 floats?
         if len(self.lines[2].split()) != 9:
-            self.errors[self.startline + 2].append(('ValueError', f"{self.__line_link(3)} line {self.startline + 2} of SOIL '{name}' has {self.lines[2].split()} values, but 9 were expected."))
+            self.errors[self.startline + 2].append(('ValueError', f"{self.__line_link(3)} line {self.startline + 3} of SOIL '{name}' has {len(self.lines[2].split())} values, but 9 were expected."))
 
         # line 4,5,6
         # TODO 3x3 matrix with 1 whitespace of indention?
         for i in (3,4,5):
             if len(self.lines[i].split()) != 3:
-                self.errors[self.startline + i].append(('ValueError', f"{self.__line_link(i + 1)} line {self.startline + i} of SOIL '{name}' has {self.lines[i].split()} values, but 3 were expected."))
+                self.errors[self.startline + i].append(('ValueError', f"{self.__line_link(i + 1)} line {self.startline + i + 1} of SOIL '{name}' has {len(self.lines[i].split())} values, but 3 were expected."))
             
             if not self.lines[i].startswith(' '):
-                self.errors[self.startline + i].append(('Warning', f"{self.__line_link(i + 1)} line {self.startline + 1} of SOIL '{name}' is not correctly indended and might cause problems."))
+                self.errors[self.startline + i].append(('Warning', f"{self.__line_link(i + 1)} line {self.startline + i + 1} of SOIL '{name}' is not correctly indended and might cause problems."))
 
     @property
     def flat_errors(self) -> List[Tuple[str, str]]:
@@ -144,3 +144,14 @@ class SoilDef:
         for errs in self.errors.values():
             err_list.extend(errs)
         return err_list
+
+    @property
+    def n_errors(self) -> int:
+        return len([True for v in self.errors.values() for e in v if e[0].lower() != 'warning'])
+    
+    @property
+    def n_warnings(self) -> int:
+        return len([True for v in self.errors.values() for e in v if e[0].lower() == 'warning'])
+    
+    def valid(self, warnings_as_errors: bool = True) -> bool:
+        return self.n_errors == 0 and (not warnings_as_errors or self.n_warnings == 0)
