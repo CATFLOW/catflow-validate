@@ -80,23 +80,35 @@ def soil(filename: str, verbose: bool = False, extended: bool = False, omit_warn
 @click.command()
 @click.option('--input-folder', '-i', default='./', help="CATFLOW input data root folder")
 @click.option('--landuse-filename', '-L', default='landuseclass.def', help="Name of the landuse-class definition file")
+@click.option('--soil-filename', '-S', default="*_soils.def", help="Name of the soil class definition file")
 @click.option('--fmt', default='txt', type=click.Choice(['txt', 'md'], case_sensitive=False), help="Output format of the report")
 @click.option('--base-href', type=str, help="Base href path for hyperlinks in the report.")
-def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def', fmt: str = 'txt', base_href=None):
+@click.option('--encoding', default="latin1", help="File encoding. Defaults to 'latin1'")
+def report(input_folder: str = './', landuse_filename: str = 'landuseclass.def', soil_filename: str = '*_soils.def', fmt: str = 'txt', base_href=None, encoding: str = 'latin1'):
     # get all files recursively
     filenames = glob.glob(os.path.join(input_folder, '**', '*'), recursive=True)
 
     # filter for the landuse file
     #try:
     filename = next(filter(lambda s: s.endswith(landuse_filename), filenames))
-    landuse = LanduseClassDef(filename=filename, basepath=input_folder, recursive=True, fmt=fmt, base_href=base_href)
+    landuse = LanduseClassDef(filename=filename, basepath=input_folder, recursive=True, encoding=encoding, fmt=fmt, base_href=base_href)
     landuse.validate()
     #except Exception:
     #    print('GOT WRONG')
     #    landuse = None
 
+    # try to find the soil file
+    soilnames = glob.glob(os.path.join(input_folder, '**', soil_filename), recursive=True)
+    if len(soilnames) > 1:
+        click.secho("FOUND MORE THAN ONE SOIL DEFINITION FILE. THIS IS NOT YET SUPPORTED.")
+        return
+    if len(soilnames) == 0:
+        soil = None
+    else:
+        soil = SoilsDef(filename=soilnames[0], encoding=encoding, fmt=fmt, base_href=base_href)
+
     # finally build the report
-    report = Report(landuse=landuse, fmt=fmt)
+    report = Report(landuse=landuse, soil=soil, fmt=fmt)
     report()
 
 

@@ -38,6 +38,8 @@ class Report:
 
         # details
         self.landuse_details()
+        echo(' ')
+        self.soil_details()
 
     def echo_summary(self, lines: list):
  # create the header
