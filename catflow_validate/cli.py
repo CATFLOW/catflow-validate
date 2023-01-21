@@ -38,7 +38,8 @@ def landuse(filename: str, recursive: bool = False, verbose: bool = False, exten
 
     # create the report
     report = Report(landuse=l)
-    report.landuse_summary()
+    lines = report.landuse_summary()
+    report.echo_summary(lines)
 
     if extended:
         click.echo('')
@@ -48,8 +49,9 @@ def landuse(filename: str, recursive: bool = False, verbose: bool = False, exten
 @click.command()
 @click.option('--filename', '-f', default='./l*_soils.def', help='Filename for the SOIL definition file.')
 @click.option('--verbose', '-v', default=False, is_flag=True, help="Print out verbose information on errors and warnings.")
+@click.option('--extended', '-e', default=False, is_flag=True, help="Print an extended report.")
 @click.option('--omit-warnings', '-w', default=False, is_flag=True, help="If set, Warnings are ignored.")
-def soil(filename: str, verbose: bool = False, omit_warnings: bool = False) -> int:
+def soil(filename: str, verbose: bool = False, extended: bool = False, omit_warnings: bool = False) -> int:
     if not os.path.exists(filename):
         click.echo("The soil definition file could not be found")
         return 1
@@ -66,8 +68,14 @@ def soil(filename: str, verbose: bool = False, omit_warnings: bool = False) -> i
         return 0
 
     # use the report
-    click.echo('Verbose output not implemented yet')
-    
+    report = Report(soil=s)
+    lines = report.soil_summary()
+    report.echo_summary(lines)
+
+    if extended:
+        click.echo('')
+        report.soil_details(extended=extended)
+
 
 @click.command()
 @click.option('--input-folder', '-i', default='./', help="CATFLOW input data root folder")
