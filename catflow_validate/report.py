@@ -31,17 +31,22 @@ class Report:
         echo('')
 
         # overview
-        self.landuse_summary()
+        lines = self.landuse_summary()
+        lines.extend(self.soil_summary())
+        self.echo_summary(lines)
         echo('')
 
         # details
         self.landuse_details()
-    
+
+    def echo_summary(self, lines: list):
+ # create the header
+        header = ['Object', 'checked', 'errors', 'warnings']
+        message = self.fmt.tabular(lines, header)
+        echo(message)
+
     def landuse_summary(self):
         """Print single line summary"""
-        # create the header
-        header = ['Object', 'checked', 'errors', 'warnings']
-        
         # collect the summary lines
         lines = []
         
@@ -75,9 +80,7 @@ class Report:
                 ]
                 lines.append(msg)
             
-            # now all the lines are there, format and echo
-            message = self.fmt.tabular(lines, header)
-            echo(message)
+            return lines
     
     def landuse_details(self, extended: bool = True):
         # check if there are invalid landuse classes
@@ -87,8 +90,8 @@ class Report:
         if extended:
             echo(self.fmt.heading('Landuse-class definitions', 2))
             echo('')
-            echo(f"PATH: {self.landuse.path}")
-            echo(f"NAME: {self.landuse.basename}")
+            echo(f"PATH:             {self.landuse.path}")
+            echo(f"NAME:             {self.landuse.basename}")
             echo(f"Total classes:    {len(self.landuse.data)}")
             click.secho(f"Invalid classes:  {n_inval}", fg='red' if n_inval > 0 else '')
             echo('')
@@ -97,7 +100,7 @@ class Report:
             return
         
         # there are errors, so print them
-        echo(self.fmt.heading('Error Details', level=3))
+        echo(self.fmt.heading('Landuse Error Details', level=3))
         for cl, warn in self.landuse.errors.items():
             # get the params if any
             par = self.landuse.parameters.get(cl)
@@ -127,6 +130,57 @@ class Report:
                     click.echo(f'  PARAMETER FILE ({par.basename}):')
                     for ty, msg in par.flat_errors:
                         click.secho(f"  - {msg}", fg= '' if False else ERROR_COLORS.get(ty.lower(), 'blue'))
+
+    def soil_summary(self):
+        """Print single line summary""" 
+        # collect the summary lines
+        lines = []
+
+        # check if a soil files was added to the report
+        if self.soil is None:
+            lines.append(['SOIL classes', 'not checked', 'NA', 'NA'])
+        else:
+            msg = [
+                style('SOIL classes', fg='green' if self.soil.valid() else 'red'),
+                style('valid  ' if self.soil.valid() else 'invalid', fg='green' if self.soil.valid() else 'red'),
+                style(self.soil.n_errors, fg='' if self.soil.n_errors == 0 else 'red'),
+                style(self.soil.n_warnings, fg='' if self.soil.n_warnings == 0 else 'yellow')
+            ]
+            lines.append(msg)
+        
+        return lines
+
+
+    def soil_details(self, extended: bool = True):
+        # print an extended header
+        if extended:
+            echo(self.fmt.heading('SOIL class definitions', 2))
+            echo('')
+            echo(f"PATH:           {self.soil.path}")
+            echo(f"NAME:           {self.soil.basename}")
+            echo(f"Total soils:    {self.soil.n_soils}")
+            inval_cls = sum([1 for s in self.soil.soils if not s.valid()])
+            click.secho(f"Invalid soils:  {inval_cls}", fg='red' if inval_cls > 0 else '')
+        
+        # check if there are errors at all
+        if self.soil.valid():
+            return
+        
+        # otherwise there are errors
+        echo(self.fmt.heading('Soil Error Details'))
+        
+        # check if there are overall errors
+        for l in (-1, 1):
+            for cl, warn in self.soil.errors.get(l, []):
+                click.secho(f"+ {warn}", fg='' if False else ERROR_COLORS.get(cl.lower(), 'blue'))
+        
+        # append all soils
+        for s in self.soil.soils:
+            if s.valid():
+                continue
+            click.secho(f"+ SOIL: {s.lines[0].split()[-1]}", fg='red' if s.n_errors > 0 else 'yellow')
+            for ty, warn in s.flat_errors:
+                click.secho(f"  - {warn}", fg='' if False else ERROR_COLORS.get(ty.lower(), 'blue'))
         
     def run(self):
         if self.output_file:
