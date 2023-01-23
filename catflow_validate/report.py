@@ -197,8 +197,9 @@ class Report:
         """Get through all child test suites and return their state"""
         # landuse
         landuse = self.landuse is not None and self.landuse.n_errors == 0 and (warnings_as_errors and self.landuse.n_warnings == 0)
+        soil = self.soil is not None and self.soil.n_errors == 0 and (warnings_as_errors and self.soil.n_warnings == 0)
 
-        return landuse
+        return landuse and soil
 
     def __call__(self):
         self.run()
