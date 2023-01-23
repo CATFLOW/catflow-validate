@@ -1,0 +1,31 @@
+tools:
+  catlidate:
+    title: Validate CATFLOW input files
+    description: |
+      The `catlidate` command line tool checks input files for the hydrological model CATFLOW.
+      Currently, landuse-class definition files, landuse-class parameter files and soil definition files are checked 
+      to be complete and valid. The tool will output either a Markdown or Text report.
+    parameters:
+      input_folder:
+        type: string
+        optional: true
+        default: /in/
+        description: Root CATFLOW input folder, where all needed files can be found. Defaults to the `/in/` mount point.
+      format:
+        type: enum
+        values:
+          - md
+          - txt
+        optional: true
+        default: md
+        description: Output format. Defaults to Markdown (md)
+      landuse_filename:
+        type: string
+        optional: true
+        default: landuseclass.def
+        description: Name of the file containing the landuse-class definitions.
+      soil_filename:
+        type: string
+        optional: true
+        default: "*_soils.def"
+        description: Name of the file containing the soil definitions.
