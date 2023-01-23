@@ -1,3 +1,4 @@
+import pytest
 import os
 import glob
 import click
@@ -6,7 +7,16 @@ import warnings
 from catflow_validate.landuse import LanduseClassDef
 from catflow_validate.soil import SoilsDef
 from catflow_validate.report import Report
-from catflow_validate.testing.conftest import input_folder, omit_warnings
+
+
+@pytest.fixture
+def input_folder(request):
+    return request.config.getoption('input_folder', './')
+
+
+@pytest.fixture
+def omit_warnings(request):
+    return request.config.getoption('omit_warnings', False)
 
 
 def test_landuse(input_folder, omit_warnings):
